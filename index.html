@@ -25,7 +25,7 @@
 <div id="All">
     <div id="status">CHAT SEEKEE</div>
     <ul id="Lista">
-        <li class="bot-msg">Hi! Soy Sofía! ¿Sobre qué quieres consultar?</li>
+        <li class="bot-msg">Soy Sofía! ¿Sobre qué quieres consultar?</li>
     </ul>
 </div>
 
@@ -34,13 +34,12 @@
 <script src="datos.js"></script>
 
 <script>
-         const lista = document.getElementById("Lista");
+       const lista = document.getElementById("Lista");
     const chatContainer = document.getElementById("All");
     let ultimoTema = null; 
-    let paginasLeidas = new Set(); // Historial para no repetir
+    let paginasLeidas = new Set(); 
 
     const SALUDOS = ["hola", "buenos dias", "buenas tardes", "que tal", "como estas", "saludos"];
-    
     const ARGUMENTO = ["mas", "argumenta", "argumentalo", "dime mas", "explicame", "explicamelo", "interesa", "sigue", "continua", "detalles", "cuentame mas"];
 
     function limpiarTexto(t) {
@@ -65,12 +64,27 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
+    function crearMensajeUsuario(t) {
+        const li = document.createElement("li");
+        li.className = "user-msg";
+        li.textContent = t;
+        lista.appendChild(li);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function checkEnter(event) { 
+        if (event.key === "Enter") {
+            event.preventDefault(); // Evita recarga de página
+            Responder(); 
+        }
+    }
+
     function Responder() {
         const input = document.getElementById("Input");
         const originalPrompt = input.value.trim();
-        const promptLimpio = limpiarTexto(originalPrompt);
-        if (!originalPrompt || typeof LIBROS === 'undefined') return;
+        if (!originalPrompt) return;
 
+        const promptLimpio = limpiarTexto(originalPrompt);
         crearMensajeUsuario(originalPrompt);
         input.value = "";
 
@@ -78,24 +92,19 @@
         let mayorPuntaje = 0;
         let candidatoSeleccionado = null;
 
-        // 1. Verificar Saludos
         if (SALUDOS.some(s => promptLimpio.includes(s))) {
-            mejorRespuesta = "¡Hola! Soy SeeKee. ¿Sobre qué tema de tu biblioteca quieres profundizar hoy?";
-        } 
-        else {
+            mejorRespuesta = "¡Hola! Soy SeeKee. ¿En qué puedo ayudarte hoy?";
+        } else {
             const esArgumento = ARGUMENTO.some(arg => promptLimpio.includes(arg));
             const palabrasBusqueda = promptLimpio.split(/\s+/).filter(w => w.length > 3);
 
             LIBROS.forEach((pagina, index) => {
-                // Si es argumento, buscamos algo que NO hayamos leído antes
                 if (esArgumento && paginasLeidas.has(index)) return;
-
                 let textoPagina = limpiarTexto(pagina.c);
                 let tituloLibro = pagina.t ? limpiarTexto(pagina.t) : "";
                 let puntos = 0;
 
-                // Si estamos argumentando, damos prioridad al mismo libro anterior
-                if (esArgumento && ultimoTema && pagina.t === ultimoTema.t) puntos += 20;
+                if (esArgumento && ultimoTema && pagina.t === ultimoTema.t) puntos += 25;
 
                 palabrasBusqueda.forEach(palabra => {
                     if (textoPagina.includes(palabra)) puntos += 10;
@@ -114,25 +123,14 @@
                 ultimoTema = pagina;
                 mejorRespuesta = `(Libro: ${pagina.t} - Pág. ${pagina.p}): ${pagina.c}`;
             } else {
-                mejorRespuesta = esArgumento ? "No encontré más detalles nuevos sobre ese tema." : "No encontré registros que coincidan.";
+                mejorRespuesta = esArgumento ? "No hay más información nueva sobre eso." : "No encontré registros que coincidan.";
             }
         }
 
-        procesarVozYMensaje(mejorRespuesta);
-    }
-
-    function crearMensajeUsuario(t) {
-        const li = document.createElement("li");
-        li.className = "user-msg";
-        li.textContent = t;
-        lista.appendChild(li);
-    }
-
-    function procesarVozYMensaje(texto) {
         setTimeout(() => {
             window.speechSynthesis.cancel();
-            const b1 = texto.substring(0, 1000);
-            const b2 = texto.substring(1000, 3400);
+            const b1 = mejorRespuesta.substring(0, 1000);
+            const b2 = mejorRespuesta.substring(1000, 3400);
             crearMensajeBot(b1);
             const v1 = hablar(b1);
             v1.onend = () => { if (b2) { crearMensajeBot(b2); hablar(b2); } };
