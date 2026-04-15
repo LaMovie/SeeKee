@@ -3,160 +3,95 @@
 <head>
    <meta charset="UTF-8"/>
    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-   <title>HPN DATA - Kybalion</title>
+   <title>HPN DATA - Inteligencia de Inventario</title>
    <style>
-      body { background: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow: hidden; }
-      
-      /* Contenedor de mensajes */
-      #All { 
-          width: 100%; 
-          height: 80vh; 
-          display: flex; 
-          flex-direction: column; 
-          overflow-y: auto; 
-          padding: 10px;
-          box-sizing: border-box;
-      }
-
+      body { background: #000; font-family: sans-serif; margin: 0; overflow: hidden; }
+      #All { width: 100%; height: 80vh; display: flex; flex-direction: column; overflow-y: auto; padding: 15px; box-sizing: border-box; }
       ul { padding: 0; list-style: none; display: flex; flex-direction: column; }
-      
-      ul li { 
-          max-width: 80%; 
-          margin-bottom: 15px; 
-          padding: 15px; 
-          border-radius: 15px; 
-          font-size: 16px; 
-          line-height: 1.4; 
-          word-wrap: break-word;
-      }
-
-      /* Estilo Bot (Oro) */
-      .bot-msg { 
-          background: #FFD700; 
-          color: #000; 
-          align-self: flex-start; 
-          border-bottom-left-radius: 2px;
-          box-shadow: 2px 2px 10px rgba(255, 215, 0, 0.2);
-      }
-
-      /* Estilo Usuario (Azul) */
-      .user-msg { 
-          background: #007BFF; 
-          color: #fff; 
-          align-self: flex-end; 
-          border-bottom-right-radius: 2px;
-      }
-
-      /* Input fijo abajo */
-      #Input { 
-          width: 90%; 
-          padding: 15px; 
-          position: fixed; 
-          bottom: 15px; 
-          left: 50%; 
-          transform: translateX(-50%); 
-          background: #FFD700; 
-          border-radius: 30px; 
-          border: none; 
-          font-weight: bold; 
-          font-size: 16px;
-          outline: none;
-      }
-
-      #status {
-          font-size: 12px;
-          text-align: center;
-          padding: 5px;
-          color: #555;
-      }
+      ul li { max-width: 85%; margin-bottom: 15px; padding: 15px; border-radius: 20px; font-size: 16px; line-height: 1.4; }
+      .bot-msg { background: #FFD700; color: #000; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 2px 2px 10px rgba(255, 215, 0, 0.3); }
+      .user-msg { background: #007BFF; color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
+      #Input { width: 90%; padding: 18px; position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: #FFD700; border-radius: 30px; border: none; font-weight: bold; font-size: 16px; outline: none; }
+      #status { font-size: 10px; text-align: center; color: #444; margin-bottom: 5px; }
    </style>
 </head>
 <body>
 
 <div id="All">
-    <div id="status">Verificando datos...</div>
+    <div id="status">HPN DATA SYSTEM ONLINE</div>
     <ul id="Lista">
-        <li class="bot-msg">Soy HPN DATA. He leído El Kybalión. ¿Qué quieres consultar?</li>
+        <li class="bot-msg">Soy SeeKee! ¿Sobre qué quieres consultar?</li>
     </ul>
 </div>
 
-<input type="text" id="Input" placeholder="Escribe tu pregunta..." onkeypress="checkEnter(event)">
+<input type="text" id="Input" placeholder="Consultar base de datos..." onkeypress="checkEnter(event)">
 
 <script src="datos.js"></script>
 
 <script>
-    const statusDiv = document.getElementById("status");
     const lista = document.getElementById("Lista");
     const chatContainer = document.getElementById("All");
 
-    // Verificar si LIBROS cargó
-    if (typeof LIBROS !== 'undefined') {
-        statusDiv.innerHTML = "✅ Base de Datos: " + LIBROS.length + " páginas listas.";
-        statusDiv.style.color = "#4CAF50";
-    } else {
-        statusDiv.innerHTML = "❌ Error: No se encuentra datos.js";
-        statusDiv.style.color = "#F44336";
-    }
-
-    function checkEnter(event) {
-        if (event.key === "Enter") Responder();
-    }
+    function checkEnter(event) { if (event.key === "Enter") Responder(); }
 
     function Responder() {
         const input = document.getElementById("Input");
         const prompt = input.value.trim();
-        if (!prompt) return;
+        if (!prompt || typeof LIBROS === 'undefined') return;
 
-        // 1. Mostrar mensaje usuario
+        // Mensaje Usuario
         const liUser = document.createElement("li");
         liUser.className = "user-msg";
         liUser.textContent = prompt;
         lista.appendChild(liUser);
-        
-        input.value = ""; // Limpiar input
+        input.value = "";
 
-        // 2. BUSCADOR MEJORADO
-        let mejorRespuesta = "No encontré ese tema en el libro. Intenta con palabras como: mente, vibración, ritmo o causa.";
+        // BUSCADOR CON RECORTE
+        let mejorRespuesta = "No se encontraron registros relacionados en los documentos.";
         let mayorPuntaje = 0;
-        
-        // Limpiamos la pregunta: minúsculas y solo palabras importantes
-        const palabrasBusqueda = prompt.toLowerCase().replace(/[?,.!]/g, "").split(/\s+/).filter(w => w.length > 3);
+        const palabrasBusqueda = prompt.toLowerCase().split(/\s+/).filter(w => w.length > 3);
 
         LIBROS.forEach(pagina => {
+            let textoPagina = pagina.c.toLowerCase();
             let puntos = 0;
-            // Limpiamos el texto de la página para que la búsqueda sea fácil
-            let textoPagina = pagina.c.toLowerCase().replace(/\s+/g, " ");
+            let indexPalabra = -1;
 
             palabrasBusqueda.forEach(palabra => {
-                if (textoPagina.includes(palabra)) {
-                    puntos += 10; // Punto por coincidencia exacta
+                let pos = textoPagina.indexOf(palabra);
+                if (pos !== -1) {
+                    puntos += 10;
+                    if (indexPalabra === -1) indexPalabra = pos;
                 }
             });
 
             if (puntos > mayorPuntaje) {
                 mayorPuntaje = puntos;
-                mejorRespuesta = `(Pág. ${pagina.p}): ${pagina.c}`;
+                // EXTRAER FRAGMENTO: 40 caracteres antes y 160 después de la palabra clave
+                let inicio = Math.max(0, indexPalabra - 40);
+                let fin = Math.min(pagina.c.length, inicio + 220);
+                let fragmento = pagina.c.substring(inicio, fin).trim();
+                
+                mejorRespuesta = `[${pagina.l} | Pág. ${pagina.p}]: "...${fragmento}..."`;
             }
         });
 
-        // 3. Mostrar respuesta del Bot
+        // Respuesta Bot
         setTimeout(() => {
             const liBot = document.createElement("li");
             liBot.className = "bot-msg";
             liBot.textContent = mejorRespuesta;
             lista.appendChild(liBot);
-            
-            // Scroll automático
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Voz
+            // VOZ OPTIMIZADA (Máximo 200 caracteres para claridad)
             const synth = window.speechSynthesis;
-            const utterance = new SpeechSynthesisUtterance(mejorRespuesta);
+            synth.cancel(); // Detiene audios previos
+            const utterance = new SpeechSynthesisUtterance(mejorRespuesta.substring(0, 200));
             utterance.lang = 'es-ES';
+            utterance.rate = 1.0; 
             synth.speak(utterance);
-        }, 500);
+        }, 300);
     }
 </script>
-
 </body>
 </html>
