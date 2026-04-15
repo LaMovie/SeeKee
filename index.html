@@ -34,8 +34,18 @@
 <script src="datos.js"></script>
 
 <script>
-        const lista = document.getElementById("Lista");
+            const lista = document.getElementById("Lista");
     const chatContainer = document.getElementById("All");
+    let ultimoTema = null; // Memoria de SeeKee
+
+    const ARGUMENTO = ["mas", "argumenta", "argumentalo", "dime mas", "explicame", "explicamelo", "interesa", "sigue", "continua", "detalles"];
+
+    // Función vital: Limpia tildes y símbolos
+    function limpiarTexto(t) {
+        return t.toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quita tildes
+                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");    // Quita símbolos
+    }
 
     function checkEnter(event) { if (event.key === "Enter") Responder(); }
 
@@ -44,7 +54,7 @@
         const utterance = new SpeechSynthesisUtterance(texto);
         utterance.lang = 'es-ES';
         synth.speak(utterance);
-        return utterance; // Devolvemos el objeto para detectar cuando termine
+        return utterance;
     }
 
     function crearMensajeBot(texto) {
@@ -57,47 +67,57 @@
 
     function Responder() {
         const input = document.getElementById("Input");
-        const prompt = input.value.trim();
-        if (!prompt || typeof LIBROS === 'undefined') return;
+        const originalPrompt = input.value.trim();
+        const promptLimpio = limpiarTexto(originalPrompt);
+        
+        if (!originalPrompt || typeof LIBROS === 'undefined') return;
 
+        // Mostrar mensaje usuario
         const liUser = document.createElement("li");
         liUser.className = "user-msg";
-        liUser.textContent = prompt;
+        liUser.textContent = originalPrompt;
         lista.appendChild(liUser);
         input.value = "";
 
-        let mejorRespuesta = "No encontré registros que coincidan con esa búsqueda.";
+        let mejorRespuesta = "";
         let mayorPuntaje = 0;
-        const palabrasBusqueda = prompt.toLowerCase().split(/\s+/).filter(w => w.length > 3);
 
-        LIBROS.forEach(pagina => {
-            let textoPagina = pagina.c.toLowerCase();
-            let puntos = 0;
-            palabrasBusqueda.forEach(palabra => { if (textoPagina.includes(palabra)) puntos += 10; });
-            if (puntos > mayorPuntaje) {
-                mayorPuntaje = puntos;
-                mejorRespuesta = "(Pág. " + pagina.p + "): " + pagina.c;
-            }
-        });
+        // Lógica de ARGUMENTACIÓN (Memoria)
+        const esArgumento = ARGUMENTO.some(arg => promptLimpio.includes(arg));
+        
+        if (esArgumento && ultimoTema) {
+            mejorRespuesta = "Profundizando en este tema: " + ultimoTema.c;
+        } else {
+            const palabrasBusqueda = promptLimpio.split(/\s+/).filter(w => w.length > 3);
+            
+            LIBROS.forEach(pagina => {
+                let textoPagina = limpiarTexto(pagina.c);
+                let tituloLibro = pagina.t ? limpiarTexto(pagina.t) : ""; // Soporte para títulos
+                let puntos = 0;
+
+                palabrasBusqueda.forEach(palabra => {
+                    if (textoPagina.includes(palabra)) puntos += 10;
+                    if (tituloLibro.includes(palabra)) puntos += 50; // Prioriza por título
+                });
+
+                if (puntos > mayorPuntaje) {
+                    mayorPuntaje = puntos;
+                    ultimoTema = pagina; // Guardar en memoria
+                    mejorRespuesta = "(Pág. " + pagina.p + "): " + pagina.c;
+                }
+            });
+        }
+
+        if (!mejorRespuesta) mejorRespuesta = "No encontré registros sobre eso.";
 
         setTimeout(() => {
             window.speechSynthesis.cancel();
-            
-            // Dividir el texto en dos fragmentos según tu regla
-            const bloque1 = mejorRespuesta.substring(0, 1000);
-            const bloque2 = mejorRespuesta.substring(1000, 3400);
+            const b1 = mejorRespuesta.substring(0, 1000);
+            const b2 = mejorRespuesta.substring(1000, 3400);
 
-            // Ejecutar Bloque 1
-            crearMensajeBot(bloque1);
-            const v1 = hablar(bloque1);
-
-            // Cuando termine el Bloque 1, si hay Bloque 2, lo lanza
-            v1.onend = () => {
-                if (bloque2) {
-                    crearMensajeBot(bloque2);
-                    hablar(bloque2);
-                }
-            };
+            crearMensajeBot(b1);
+            const v1 = hablar(b1);
+            v1.onend = () => { if (b2) { crearMensajeBot(b2); hablar(b2); } };
         }, 300);
     }
 </script>
