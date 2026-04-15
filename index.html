@@ -52,6 +52,7 @@
     let paginasLeidas = new Set(); 
 
     const SALUDOS = ["hola", "buenos dias", "buenas tardes", "que tal", "como estas", "saludos"];
+    
     const ARGUMENTO = ["mas", "argumenta", "argumentalo", "dime mas", "explicame", "explicamelo", "interesa", "sigue", "continua", "detalles", "cuentame mas"];
 
     function limpiarTexto(t) {
@@ -106,7 +107,7 @@
         let candidatoSeleccionado = null;
 
         if (SALUDOS.some(s => promptLimpio.includes(s))) {
-            mejorRespuesta = "¡Hola! Soy SeeKee, tu asistente inteligente de lectura. ¿Qué libro o tema exploramos?";
+            mejorRespuesta = "¡Hola! Soy SeeKee, un asistente de Teosofía ¿Qué libro o tema exploramos?";
         } else {
             const esArgumento = ARGUMENTO.some(arg => promptLimpio.includes(arg));
             const palabrasBusqueda = promptLimpio.split(/\s+/).filter(w => w.length > 3);
