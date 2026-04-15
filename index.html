@@ -1,158 +1,105 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html lang="es">
 <head>
-     <meta charset="UTF-8">
-     <meta http-equiv="X-UA-Compatible" content="IE-edge">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-     <title>🍿LA MOVIE APK🍿</title>
-<style>   
-@import url('https://fonts.googleapis.com/css2?family=Lacquer&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    overflow: hidden; 
-    background: #000;
-    font-family: 'Lacquer', cursive;
-}
-
-.MainContainer {
-    width: 100vw;
-    height: 100vh;
-    background: url(https://is.gd/L4PVt2);
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: puff-in-hor 1.5s cubic-bezier(.47,0,.745,.715) both;
-}
-
-@keyframes puff-in-hor {
-    0% { transform: scaleX(2); filter: blur(4px); opacity: 0; }
-    100% { transform: scaleX(1); filter: blur(0px); opacity: 1; }
-}
-
-#H2 {
-    color: #0a0;
-    padding: 5px 15px;
-    margin-top: 20px;
-    border-radius: 10px;
-    background: #4fff49;
-    border: 2px solid #fff;
-    box-shadow: 0px 0px 20px #fff;
-    font-size: 1.2rem;
-    cursor: pointer;
-    z-index: 10;
-}
-
-.Descargar {
-    margin-top: 20px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-ul {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-    text-align: center;
-}
-
-ul li h1 {    
-    font-size: 1.1rem; 
-    padding: 10px 20px;
-    margin: 10px 0;
-    transition: .5s;
-    border-radius: 20px; 
-    background: url(https://bit.ly/3RmINlu);     
-    background-size: cover;
-    box-shadow: 0px 0px 20px red;
-    color: #fff;
-}
-
-#D {
-    flex: 1; 
-    width: 90%;
-    max-width: 500px;
-    margin: 20px 0;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.7); 
-    backdrop-filter: blur(10px);
-    border-radius: 20px 20px 0 0;
-    border: 1px solid rgba(255, 0, 0, 0.3);
-    overflow-y: auto; 
-    color: #fff;
-    text-align: center;
-    transition: all 0.3s ease;
-}
-
-#D h3 { color: #ffea00; font-size: 1.5rem; margin-bottom: 15px; }
-#D p { font-family: 'Roboto', sans-serif; font-weight: normal; line-height: 1.5; font-size: 1rem; margin-bottom: 15px; }
-.highlight { color: #4fff49; font-weight: bold; }
-
-#S {
-    border-radius: 20px;
-    font-weight: bold;
-    background: gold;
-    color: #000;
-    width: 80%;
-    padding: 10px;
-    cursor: pointer;
-    outline: none;
-    list-style: none;
-}
-
-#D::-webkit-scrollbar { width: 5px; }
-#D::-webkit-scrollbar-thumb { background: red; border-radius: 10px; }
-</style>     
+   <meta charset="UTF-8"/>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+   <title>HPN DATA - Inteligencia de Inventario</title>
+   <style>
+      body { background: #000; font-family: sans-serif; margin: 0; overflow: hidden; }
+      #All { width: 100%; height: 80vh; display: flex; flex-direction: column; overflow-y: auto; padding: 15px; box-sizing: border-box; }
+      ul { padding: 0; list-style: none; display: flex; flex-direction: column; }
+      ul li { max-width: 85%; margin-bottom: 15px; padding: 15px; border-radius: 20px; font-size: 16px; line-height: 1.4; }
+      
+      /* Estilo Bot (Oro) */
+      .bot-msg { background: #FFD700; color: #000; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 2px 2px 10px rgba(255, 215, 0, 0.3); }
+      
+      /* Estilo Usuario (Azul) */
+      .user-msg { background: #007BFF; color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
+      
+      #Input { width: 90%; padding: 18px; position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: #FFD700; border-radius: 30px; border: none; font-weight: bold; font-size: 16px; outline: none; }
+      #status { font-size: 10px; text-align: center; color: #444; margin-top: 5px; }
+   </style>
 </head>
 <body>
 
-<div class="MainContainer">
-    <h2 id="H2">DESCARGAS</h2>
-    <div class="Descargar">
-        <ul>    
-            <li><a href="https://lamovie.github.io/-INICIO/LA%20MOVIE%20LITE.apk"><h1>🔥 La Movie Premium APK 🔥</h1></a></li>
-            <li><a href="https://archive.org/download/la-movie_202508/LA%20MOVIE%20%F0%9F%8D%BF.apk"><h1>🍿 La Movie APK 🍿</h1></a></li>
-        </ul>
-    </div>  
-
-    <div id="D">
-        <center>
-            <details id="detailsBox" open>
-                <summary id="S">💊 DESCRIPCIÓN 💊</summary>
-                <h3>🍿 TU PASAPORTE AL ENTRETENIMIENTO INFINITO</h3>
-                <p>Explora un universo de emociones con la mejor selección de cine y televisión.</p>
-                <p>Acción, terror, documentales y TV en vivo. ¡Dale play a tu próxima obsesión en <span class="highlight">La Movie</span>!</p>
-                <p>Actualizamos nuestro catálogo constantemente. En <span class="highlight">La Movie De Joe</span> hemos curado lo mejor para ti.</p>
-            </details>
-        </center>
-    </div>  
+<div id="All">
+    <div id="status">CHAT SEEKEE</div>
+    <ul id="Lista">
+        <li class="bot-msg">Soy SeeKee! ¿Sobre qué quieres consultar?</li>
+    </ul>
 </div>
 
+<input type="text" id="Input" placeholder="Escribe tu consulta aquí..." onkeypress="checkEnter(event)">
+
+<script src="datos.js"></script>
+
 <script>
-    const cajaD = document.getElementById('D');
-    const det = document.getElementById('detailsBox');
-    const H2 = document.getElementById('H2');
+        const lista = document.getElementById("Lista");
+    const chatContainer = document.getElementById("All");
 
-    H2.onclick = () => { window.location.href = 'https://lamovie.github.io/-INICIO/LA%20MOVIE%20LITE.apk'; }
+    function checkEnter(event) { if (event.key === "Enter") Responder(); }
 
-    det.addEventListener('toggle', () => {
-        if (det.open) {
-            cajaD.style.background = "rgba(0, 0, 0, 0.7)";
-            cajaD.style.backdropFilter = "blur(10px)";
-            cajaD.style.border = "1px solid rgba(255, 0, 0, 0.3)";
-        } else {
-            cajaD.style.background = "transparent";
-            cajaD.style.backdropFilter = "none";
-            cajaD.style.border = "none";
-        }
-    });
+    function hablar(texto) {
+        const synth = window.speechSynthesis;
+        const utterance = new SpeechSynthesisUtterance(texto);
+        utterance.lang = 'es-ES';
+        synth.speak(utterance);
+        return utterance; // Devolvemos el objeto para detectar cuando termine
+    }
+
+    function crearMensajeBot(texto) {
+        const liBot = document.createElement("li");
+        liBot.className = "bot-msg";
+        liBot.textContent = texto;
+        lista.appendChild(liBot);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function Responder() {
+        const input = document.getElementById("Input");
+        const prompt = input.value.trim();
+        if (!prompt || typeof LIBROS === 'undefined') return;
+
+        const liUser = document.createElement("li");
+        liUser.className = "user-msg";
+        liUser.textContent = prompt;
+        lista.appendChild(liUser);
+        input.value = "";
+
+        let mejorRespuesta = "No encontré registros que coincidan con esa búsqueda.";
+        let mayorPuntaje = 0;
+        const palabrasBusqueda = prompt.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+
+        LIBROS.forEach(pagina => {
+            let textoPagina = pagina.c.toLowerCase();
+            let puntos = 0;
+            palabrasBusqueda.forEach(palabra => { if (textoPagina.includes(palabra)) puntos += 10; });
+            if (puntos > mayorPuntaje) {
+                mayorPuntaje = puntos;
+                mejorRespuesta = "(Pág. " + pagina.p + "): " + pagina.c;
+            }
+        });
+
+        setTimeout(() => {
+            window.speechSynthesis.cancel();
+            
+            // Dividir el texto en dos fragmentos según tu regla
+            const bloque1 = mejorRespuesta.substring(0, 1000);
+            const bloque2 = mejorRespuesta.substring(1000, 3400);
+
+            // Ejecutar Bloque 1
+            crearMensajeBot(bloque1);
+            const v1 = hablar(bloque1);
+
+            // Cuando termine el Bloque 1, si hay Bloque 2, lo lanza
+            v1.onend = () => {
+                if (bloque2) {
+                    crearMensajeBot(bloque2);
+                    hablar(bloque2);
+                }
+            };
+        }, 300);
+    }
 </script>
 </body>
 </html>
