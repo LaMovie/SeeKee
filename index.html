@@ -25,7 +25,7 @@
 <div id="All">
     <div id="status">CHAT SEEKEE</div>
     <ul id="Lista">
-        <li class="bot-msg">Soy Sofía! ¿Sobre qué quieres consultar?</li>
+        <li class="bot-msg">Hi! Soy Sofía! ¿Sobre qué quieres consultar?</li>
     </ul>
 </div>
 
@@ -34,20 +34,20 @@
 <script src="datos.js"></script>
 
 <script>
-            const lista = document.getElementById("Lista");
+         const lista = document.getElementById("Lista");
     const chatContainer = document.getElementById("All");
-    let ultimoTema = null; // Memoria de SeeKee
+    let ultimoTema = null; 
+    let paginasLeidas = new Set(); // Historial para no repetir
 
-    const ARGUMENTO = ["mas", "argumenta", "argumentalo", "dime mas", "explicame", "explicamelo", "interesa", "sigue", "continua", "detalles"];
+    const SALUDOS = ["hola", "buenos dias", "buenas tardes", "que tal", "como estas", "saludos"];
+    
+    const ARGUMENTO = ["mas", "argumenta", "argumentalo", "dime mas", "explicame", "explicamelo", "interesa", "sigue", "continua", "detalles", "cuentame mas"];
 
-    // Función vital: Limpia tildes y símbolos
     function limpiarTexto(t) {
         return t.toLowerCase()
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quita tildes
-                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");    // Quita símbolos
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
     }
-
-    function checkEnter(event) { if (event.key === "Enter") Responder(); }
 
     function hablar(texto) {
         const synth = window.speechSynthesis;
@@ -69,52 +69,70 @@
         const input = document.getElementById("Input");
         const originalPrompt = input.value.trim();
         const promptLimpio = limpiarTexto(originalPrompt);
-        
         if (!originalPrompt || typeof LIBROS === 'undefined') return;
 
-        // Mostrar mensaje usuario
-        const liUser = document.createElement("li");
-        liUser.className = "user-msg";
-        liUser.textContent = originalPrompt;
-        lista.appendChild(liUser);
+        crearMensajeUsuario(originalPrompt);
         input.value = "";
 
         let mejorRespuesta = "";
         let mayorPuntaje = 0;
+        let candidatoSeleccionado = null;
 
-        // Lógica de ARGUMENTACIÓN (Memoria)
-        const esArgumento = ARGUMENTO.some(arg => promptLimpio.includes(arg));
-        
-        if (esArgumento && ultimoTema) {
-            mejorRespuesta = "Profundizando en este tema: " + ultimoTema.c;
-        } else {
+        // 1. Verificar Saludos
+        if (SALUDOS.some(s => promptLimpio.includes(s))) {
+            mejorRespuesta = "¡Hola! Soy SeeKee. ¿Sobre qué tema de tu biblioteca quieres profundizar hoy?";
+        } 
+        else {
+            const esArgumento = ARGUMENTO.some(arg => promptLimpio.includes(arg));
             const palabrasBusqueda = promptLimpio.split(/\s+/).filter(w => w.length > 3);
-            
-            LIBROS.forEach(pagina => {
+
+            LIBROS.forEach((pagina, index) => {
+                // Si es argumento, buscamos algo que NO hayamos leído antes
+                if (esArgumento && paginasLeidas.has(index)) return;
+
                 let textoPagina = limpiarTexto(pagina.c);
-                let tituloLibro = pagina.t ? limpiarTexto(pagina.t) : ""; // Soporte para títulos
+                let tituloLibro = pagina.t ? limpiarTexto(pagina.t) : "";
                 let puntos = 0;
+
+                // Si estamos argumentando, damos prioridad al mismo libro anterior
+                if (esArgumento && ultimoTema && pagina.t === ultimoTema.t) puntos += 20;
 
                 palabrasBusqueda.forEach(palabra => {
                     if (textoPagina.includes(palabra)) puntos += 10;
-                    if (tituloLibro.includes(palabra)) puntos += 50; // Prioriza por título
+                    if (tituloLibro.includes(palabra)) puntos += 50;
                 });
 
                 if (puntos > mayorPuntaje) {
                     mayorPuntaje = puntos;
-                    ultimoTema = pagina; // Guardar en memoria
-                    mejorRespuesta = "(Pág. " + pagina.p + "): " + pagina.c;
+                    candidatoSeleccionado = { pagina, index };
                 }
             });
+
+            if (candidatoSeleccionado) {
+                const { pagina, index } = candidatoSeleccionado;
+                paginasLeidas.add(index);
+                ultimoTema = pagina;
+                mejorRespuesta = `(Libro: ${pagina.t} - Pág. ${pagina.p}): ${pagina.c}`;
+            } else {
+                mejorRespuesta = esArgumento ? "No encontré más detalles nuevos sobre ese tema." : "No encontré registros que coincidan.";
+            }
         }
 
-        if (!mejorRespuesta) mejorRespuesta = "No encontré registros sobre eso.";
+        procesarVozYMensaje(mejorRespuesta);
+    }
 
+    function crearMensajeUsuario(t) {
+        const li = document.createElement("li");
+        li.className = "user-msg";
+        li.textContent = t;
+        lista.appendChild(li);
+    }
+
+    function procesarVozYMensaje(texto) {
         setTimeout(() => {
             window.speechSynthesis.cancel();
-            const b1 = mejorRespuesta.substring(0, 1000);
-            const b2 = mejorRespuesta.substring(1000, 3400);
-
+            const b1 = texto.substring(0, 1000);
+            const b2 = texto.substring(1000, 3400);
             crearMensajeBot(b1);
             const v1 = hablar(b1);
             v1.onend = () => { if (b2) { crearMensajeBot(b2); hablar(b2); } };
