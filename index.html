@@ -19,10 +19,11 @@
          font-size: 16px; line-height: 1.4; animation: aparecer 0.4s ease-out forwards;
       }
       
-      .bot-msg { background: #FFD700; color: #000; align-self: flex-start; border-bottom-left-radius: 2px; }
-      .user-msg { background: #007BFF; color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
+      .bot-msg { background: purple; color: #fff; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 2px 2px 10px rgba(255, 215, 0, 0.3); font-weight: bold; }
+      .user-msg { background: blue; color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; font-weight: bold; }
       
-      #Input { width: 90%; padding: 18px; position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: #FFD700; border-radius: 30px; border: none; font-weight: bold; outline: none; }
+      #Input { width: 90%; color: #fff; padding: 18px; position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: transparent; border-radius: 30px; border: 1px solid #aaa; font-weight: bold; font-size: 16px; outline: none;
+      &:hover { border: 1px solid #b0f; }}
       #status { font-size: 10px; text-align: center; color: #444; margin-top: 5px; }
    </style>
 </head>
@@ -31,7 +32,7 @@
 <div id="All">
     <div id="status">CHAT SEEKEE</div>
     <ul id="Lista">
-        <li class="bot-msg">¡Soy SeeKee! Biblioteca actualizada. ¿Qué tema buscamos hoy?</li>
+        <li class="bot-msg">¡Soy SeeKee! ¿Sobre qué quieres consultar?</li>
     </ul>
 </div>
 
@@ -103,7 +104,7 @@
         let candidatoSeleccionado = null;
 
         if (SALUDOS.some(s => promptLimpio.includes(s))) {
-            mejorRespuesta = "¡Hola! Estoy listo para analizar tus libros. ¿Qué quieres saber?";
+            mejorRespuesta = "¡Hola! Soy SeeKee, un asistente de Teosofía, ¿Qué libro o tema exploramos?";
             mayorPuntaje = 100; // Prioridad alta al saludo
         } else {
             const esArgumento = ARGUMENTO.some(arg => promptLimpio.includes(arg));
