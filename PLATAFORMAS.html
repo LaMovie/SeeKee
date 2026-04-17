@@ -168,7 +168,10 @@ a {
    CD.forEach(cdd => {
        cdd.onclick = () => {
        var link = cdd.querySelector('a').href;
-       window.open(link, '_blank');
+       
+       setTimeout(() => {
+         window.open(link, '_blank');
+     }, 1000);
    }
  });
 </script> 
