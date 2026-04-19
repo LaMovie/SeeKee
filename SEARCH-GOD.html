@@ -60,11 +60,11 @@ body {
 <script>
 document.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
-            var Tipo = Btn.classList.contains('serie') ? "serie" : "pelicula";
+            var Tipo = Btn.classList.contains('serie') ? "serie/" : "pelicula/";
         
             var query = I.value.trim().toLowerCase();
                 
-     var URL = "https://sololatino.net/" + Tipo + "/" + query;
+     var URL = "https://sololatino.net/" + Tipo + query;
             
    window.location.href = URL; 
          I.value = '';       
