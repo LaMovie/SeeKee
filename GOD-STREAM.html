@@ -8,7 +8,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Lacquer&display=swap');
 body {
-     margin: 10vh;
+     margin: 10vh 0vh;
      height: 100vh;
      display: Flex;
      background: #000;
@@ -105,17 +105,47 @@ a {
       font-size: 2vh;
       transition: color 0.3s;
 }
+#T:hover {
+    scale: 1.2;
+}
 </style>
 </head>
 <body>
 <center>
       <ul>
+      
+<div id="T">
 <p id="P"><spam class="G">GOD-</spam><spam class="S">STREAM </spam><i id="F" class="fas fa-user-secret"></i></p><br/>
+</div>
+
          <li><a href="PLATAFORMAS.html"><h1 style="background: url(https://is.gd/2AYSOz)">STREAMING</h1></a></li>
          <li><a href="SeeKee.html"><h1 style="background: url(https://is.gd/6SSQKK)">MOVIES</h1></a></li>
          <li><a href="https://lamovie.github.io/CONTENIDO/SEARCH-CANALES.html"><h1 style="background: url(https://is.gd/zXiM7q)">FREE TV</h1></a></li>
       </ul>
 </center>
 <audio autoplay src="https://archive.org/download/sergio-mendes-feat.-black-eyed-peas-mas-que-nada-mp-3-160-k-1/Best%20Boot%20Bass%20%28Mix%29.mp3"></audio>
+<script>
+   T.onclick = () => {
+       setTimeout(() => {
+           window.open('SEARCH-GOD.html');
+       }, 1000);
+   }
+   
+   var ALL = document.querySelectorAll('a');
+   
+   ALL.forEach(al => {
+      al.onclick = (event) => {
+    event.preventDefault(); 
+ var URL = al.getAttribute('href')
+     setTimeout(() => {
+         window.open(URL);
+     }, 3000);
+   }
+ }); 
+</script>
 </body>
 </html>
+
+
+
+
