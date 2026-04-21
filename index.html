@@ -1,180 +1,159 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Seekee Chat</title>
-    <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+   <meta charset="UTF-8"/>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+   <title>SEEKEE</title>
+   <style>
+      body { background: #000; font-family: sans-serif; margin: 0; overflow: hidden; }
+      #All { width: 100%; height: 80vh; display: flex; flex-direction: column; overflow-y: auto; padding: 15px; box-sizing: border-box; scroll-behavior: smooth; }
+      ul { padding: 0; list-style: none; display: flex; flex-direction: column; }
+      
+      @keyframes aparecer {
+         from { opacity: 0; transform: translateY(10px); }
+         to { opacity: 1; transform: translateY(0); }
+      }
 
-        #chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .mensaje {
-            max-width: 85%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            font-size: 15px;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-
-        .user {
-            align-self: flex-end;
-            background-color: #005c4b;
-            color: #e9edef;
-            border-bottom-right-radius: 2px;
-        }
-
-        .bot {
-            align-self: flex-start;
-            background-color: #202c33;
-            color: #e9edef;
-            border-bottom-left-radius: 2px;
-        }
-
-        #input-area {
-            background-color: #202c33;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        input {
-            flex: 1;
-            background-color: #2a3942;
-            border: none;
-            color: #fff;
-            padding: 12px;
-            border-radius: 25px;
-            outline: none;
-        }
-
-        button {
-            background: none;
-            border: none;
-            color: #00aaff;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 5px 15px;
-        }
-
-        .status { font-size: 12px; color: #8696a0; text-align: center; margin-bottom: 5px; }
-    </style>
+      ul li { 
+         max-width: 85%; margin-bottom: 15px; padding: 15px; border-radius: 20px; 
+         font-size: 16px; line-height: 1.4; animation: aparecer 0.4s ease-out forwards;
+      }
+      
+      .bot-msg { background: purple; color: #fff; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 2px 2px 10px rgba(255, 215, 0, 0.3); font-weight: bold; }
+      .user-msg { background: blue; color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; font-weight: bold; }
+      
+      #Input { width: 90%; color: #fff; padding: 18px; position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: transparent; border-radius: 30px; border: 1px solid #aaa; font-weight: bold; font-size: 16px; outline: none;
+      &:hover { border: 1px solid #b0f; }}
+      #status { font-size: 10px; text-align: center; color: #444; margin-top: 5px; }
+   </style>
 </head>
 <body>
 
-<div id="chat-container">
-    <div class="status" id="db-status">Iniciando...</div>
+<div id="All">
+    <div id="status">CHAT SEEKEE</div>
+    <ul id="Lista">
+        <li class="bot-msg">¡Soy SeeKee! ¿Sobre qué quieres consultar?</li>
+    </ul>
 </div>
 
-<div id="input-area">
-    <input type="text" id="userInput" placeholder="Escribe un mensaje..." autocomplete="off">
-    <button onclick="enviarMensaje()">Enviar</button>
-</div>
-
-<script src="datos.js"></script>
+<input type="text" id="Input" placeholder="Escribe tu consulta aquí..." onkeypress="checkEnter(event)">
 
 <script>
-    const chatContainer = document.getElementById('chat-container');
-    const userInput = document.getElementById('userInput');
-    const dbStatus = document.getElementById('db-status');
-    const synth = window.speechSynthesis;
-    
-    let LIBROS = [];
-
-    // --- CARGA Y ACTUALIZACIÓN (Invisible y funcional) ---
-    async function cargarBiblioteca() {
-        const local = localStorage.getItem('seekee_db');
-        if (local) {
-            LIBROS = JSON.parse(local);
-            dbStatus.innerText = "Biblioteca actualizada";
-        } else if (typeof biblioteca !== 'undefined') {
-            LIBROS = biblioteca;
-            dbStatus.innerText = "Modo Local";
-        }
-
-        if (navigator.onLine) {
-            try {
-                const res = await fetch("https://lamovie.github.io/SeeKee/datos.js");
-                const texto = await res.text();
-                const json = texto.substring(texto.indexOf('['), texto.lastIndexOf(']') + 1);
-                localStorage.setItem('seekee_db', json);
-            } catch (e) { console.log("Offline update skip"); }
-        }
-    }
-
-    function agregarMensaje(texto, tipo) {
-        const div = document.createElement('div');
-        div.className = `mensaje ${tipo}`;
-        div.innerText = texto;
-        chatContainer.appendChild(div);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-        
-        if (tipo === 'bot') {
-            const utterance = new SpeechSynthesisUtterance(texto);
-            utterance.lang = 'es-ES';
-            synth.speak(utterance);
-        }
-    }
-
-    function enviarMensaje() {
-        const msn = userInput.value.trim();
-        if (!msn) return;
-
-        agregarMensaje(msn, 'user');
-        userInput.value = '';
-
-        setTimeout(() => procesarRespuesta(msn.toLowerCase()), 500);
-    }
-
-    function procesarRespuesta(msn) {
-        // 1. Saludos
-        if (msn.includes("hola") || msn.includes("buenos dias")) {
-            agregarMensaje("¡Hola! Soy Seekee. ¿Qué misterio quieres investigar hoy?", 'bot');
-            return;
-        }
-
-        // 2. Búsqueda de información (Mejorada para "Qué es el mundo espiritual")
-        // Buscamos palabras clave ignorando conectores cortos
-        const palabrasClave = msn.split(' ').filter(p => p.length > 3);
-        
-        let resultado = LIBROS.find(l => 
-            msn.includes(l.titulo.toLowerCase()) || 
-            palabrasClave.some(p => l.contenido.toLowerCase().includes(p))
-        );
-
-        if (resultado) {
-            // Si el contenido es muy largo, mandamos un fragmento para no saturar el chat
-            const extracto = resultado.contenido.length > 500 ? 
-                             resultado.contenido.substring(0, 500) + "..." : 
-                             resultado.contenido;
-            agregarMensaje(`${resultado.titulo}:\n\n${extracto}`, 'bot');
-        } else {
-            agregarMensaje("No encontré información exacta sobre eso en mis registros actuales, pero sigo aprendiendo.", 'bot');
-        }
-    }
-
-    userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') enviarMensaje(); });
-    
-    cargarBiblioteca();
+    // Forzar carga de datos sin caché para evitar ver libros eliminados
+    document.write('<script src="datos.js?v=' + Date.now() + '"><\/script>');
 </script>
 
+<script>
+    const lista = document.getElementById("Lista");
+    const chatContainer = document.getElementById("All");
+    
+    // Variables volátiles (se borran al recargar/cerrar)
+    let ultimoTema = null; 
+    let paginasLeidas = new Set(); 
+
+    const SALUDOS = ["hola", "buenos dias", "que tal", "como estas"];
+    
+    const ARGUMENTO = ["mas", "argumenta", "sigue", "detalles", "continua", "explica"];
+
+    function limpiarTexto(t) {
+        if (!t) return "";
+        return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s]/gi, '');
+    }
+
+    function hablar(texto) {
+        const synth = window.speechSynthesis;
+        const utterance = new SpeechSynthesisUtterance(texto);
+        utterance.lang = 'es-ES';
+        synth.speak(utterance);
+        return utterance;
+    }
+
+    function crearMensajeBot(texto) {
+        const liBot = document.createElement("li");
+        liBot.className = "bot-msg";
+        liBot.textContent = texto;
+        lista.appendChild(liBot);
+        chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
+    }
+
+    function crearMensajeUsuario(t) {
+        const li = document.createElement("li");
+        li.className = "user-msg";
+        li.textContent = t;
+        lista.appendChild(li);
+        chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
+    }
+
+    function checkEnter(event) { 
+        if (event.key === "Enter") {
+            event.preventDefault();
+            Responder(); 
+        }
+    }
+
+    function Responder() {
+        const input = document.getElementById("Input");
+        const originalPrompt = input.value.trim();
+        if (!originalPrompt || typeof LIBROS === 'undefined') return;
+
+        const promptLimpio = limpiarTexto(originalPrompt);
+        crearMensajeUsuario(originalPrompt);
+        input.value = "";
+
+        let mejorRespuesta = "";
+        let mayorPuntaje = 0; // Empezamos en 0 para validar existencia real
+        let candidatoSeleccionado = null;
+
+        if (SALUDOS.some(s => promptLimpio.includes(s))) {
+            mejorRespuesta = "¡Hola! Soy SeeKee, un asistente de Teosofía, ¿Qué libro o tema exploramos?";
+            mayorPuntaje = 100; // Prioridad alta al saludo
+        } else {
+            const esArgumento = ARGUMENTO.some(arg => promptLimpio.includes(arg));
+            const palabrasBusqueda = promptLimpio.split(/\s+/).filter(w => w.length > 3);
+
+            LIBROS.forEach((pagina, index) => {
+                if (esArgumento && paginasLeidas.has(index)) return;
+                
+                let textoPagina = limpiarTexto(pagina.c || "");
+                let tituloLibro = limpiarTexto(pagina.t || pagina.l || "");
+                let puntos = 0;
+
+                // Si es "más", priorizar el mismo libro que se estaba leyendo
+                if (esArgumento && ultimoTema && (pagina.t === ultimoTema.t || pagina.l === ultimoTema.l)) {
+                    puntos += 20;
+                }
+
+                palabrasBusqueda.forEach(palabra => {
+                    if (textoPagina.includes(palabra)) puntos += 10;
+                    if (tituloLibro.includes(palabra)) puntos += 50;
+                });
+
+                if (puntos > mayorPuntaje) {
+                    mayorPuntaje = puntos;
+                    candidatoSeleccionado = { pagina, index };
+                }
+            });
+
+            if (candidatoSeleccionado && mayorPuntaje > 5) {
+                const { pagina, index } = candidatoSeleccionado;
+                paginasLeidas.add(index);
+                ultimoTema = pagina;
+                mejorRespuesta = `(Libro: ${pagina.t || pagina.l} - Pág. ${pagina.p}): ${pagina.c}`;
+            } else {
+                mejorRespuesta = esArgumento ? "No hay más detalles nuevos en la biblioteca." : "No encontré ninguna información que coincida con esa búsqueda.";
+            }
+        }
+
+        setTimeout(() => {
+            window.speechSynthesis.cancel();
+            const b1 = mejorRespuesta.substring(0, 1000);
+            const b2 = mejorRespuesta.substring(1000, 3400);
+
+            crearMensajeBot(b1);
+            const v1 = hablar(b1);
+            v1.onend = () => { if (b2) { setTimeout(() => { crearMensajeBot(b2); hablar(b2); }, 500); } };
+        }, 600);
+    }
+</script>
 </body>
 </html>
