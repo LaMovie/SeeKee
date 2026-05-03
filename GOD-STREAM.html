@@ -123,7 +123,7 @@ a {
          <li><a href="https://lamovie.github.io/CONTENIDO/SEARCH-CANALES.html"><h1 style="background: url(https://is.gd/zXiM7q)">FREE TV</h1></a></li>
       </ul>
 </center>
-<audio autoplay src="https://archive.org/download/sergio-mendes-feat.-black-eyed-peas-mas-que-nada-mp-3-160-k-1/Best%20Boot%20Bass%20%28Mix%29.mp3"></audio>
+<audio id="A" autoplay src="https://archive.org/download/sergio-mendes-feat.-black-eyed-peas-mas-que-nada-mp-3-160-k-1/Best%20Boot%20Bass%20%28Mix%29.mp3"></audio>
 <script>
    T.onclick = () => {
        setTimeout(() => {
@@ -142,6 +142,10 @@ a {
      }, 1000);
    }
  }); 
+ 
+ document.onclick = () => {
+        A.pause();
+ }
 </script>
 </body>
 </html>
