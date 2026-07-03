@@ -29,7 +29,7 @@ body {
    width: 100%; 
    height: 70vh; 
    margin-top: 5vh; 
-   background: url(https://is.gd/5gxHfl);
+   background: url(https://da.gd/maO9V);
    background-size: 100% 100%;
    background-position: center;
 }
@@ -46,6 +46,15 @@ body {
 .serie { 
     background: red !important;
 }
+a {
+    color: #f00;
+    font-weight: bold;
+    cursor: none;
+    text-decoration: none;
+  &:hover {
+      color: #4f9;
+  }
+}
 </style>
 </head>
 <body>
@@ -58,7 +67,7 @@ body {
 </center>
 
 <script>
-document.addEventListener("keydown", (e) => {
+document.onkeydown = (e) => {
     if (e.key === "Enter") {
             var Tipo = Btn.classList.contains('serie') ? "serie/" : "pelicula/";
         
@@ -69,6 +78,14 @@ document.addEventListener("keydown", (e) => {
    window.location.href = URL; 
          I.value = '';       
     }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+       Swal.fire({
+    title: '⚠️Usar Un Bloqueador De Anuncios⚠️', 
+    html: '<img src="https://da.gd/maO9V" style="width: 10vh; height: 10vh; border-radius: 10px;"/><br/><a href="https://play.google.com/store/apps/details?id=com.vivaldi.browser" target="_blank">🔴 VIVALDI ADSBLOCKER 🔴</a>', 
+    icon: 'info'
 });
 </script>
 </body>
