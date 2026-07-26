@@ -44,7 +44,7 @@
     if (window.location.protocol.startsWith('http')) {
         script.src = 'datos.js?v=' + Date.now();
     } else {
-        script.src = 'https://lamovie.github.io/SeeKee/datos.js';
+        script.src = 'datos.js';
     }
     document.head.appendChild(script);
 </script>
@@ -65,7 +65,13 @@
         return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s]/gi, '');
     }
 
-    
+    function hablar(texto) {
+        const synth = window.speechSynthesis;
+        const utterance = new SpeechSynthesisUtterance(texto);
+        utterance.lang = 'es-ES';
+        synth.speak(utterance);
+        return utterance;
+    }
 
     function crearMensajeBot(texto) {
         const liBot = document.createElement("li");
@@ -90,48 +96,22 @@
         }
     }
 
-        function hablar(texto) {
-        // Verificamos si el entorno soporta la síntesis de voz
-        if (!('speechSynthesis' in window)) {
-            console.warn("Síntesis de voz no soportada en esta app/editor.");
-            return null; 
-        }
-        
-        try {
-            const synth = window.speechSynthesis;
-            const utterance = new SpeechSynthesisUtterance(texto);
-            utterance.lang = 'es-ES';
-            synth.speak(utterance);
-            return utterance;
-        } catch (e) {
-            console.error("Error al intentar hablar:", e);
-            return null;
-        }
-    }
-
     function Responder() {
         const input = document.getElementById("Input");
         const originalPrompt = input.value.trim();
-        
-        // Alerta visible si el archivo de datos no cargó correctamente
-        if (typeof LIBROS === 'undefined') {
-            alert("Error: El archivo datos.js no se ha cargado. Verifica que esté en la misma carpeta y escrito en minúsculas.");
-            return;
-        }
-        
-        if (!originalPrompt) return;
+        if (!originalPrompt || typeof LIBROS === 'undefined') return;
 
         const promptLimpio = limpiarTexto(originalPrompt);
         crearMensajeUsuario(originalPrompt);
         input.value = "";
 
         let mejorRespuesta = "";
-        let mayorPuntaje = 0; 
+        let mayorPuntaje = 0; // Empezamos en 0 para validar existencia real
         let candidatoSeleccionado = null;
 
         if (SALUDOS.some(s => promptLimpio.includes(s))) {
             mejorRespuesta = "¡Hola! Soy SeeKee, un asistente de Teosofía, ¿Qué libro o tema exploramos?";
-            mayorPuntaje = 100; 
+            mayorPuntaje = 100; // Prioridad alta al saludo
         } else {
             const esArgumento = ARGUMENTO.some(arg => promptLimpio.includes(arg));
             const palabrasBusqueda = promptLimpio.split(/\s+/).filter(w => w.length > 3);
@@ -143,6 +123,7 @@
                 let tituloLibro = limpiarTexto(pagina.t || pagina.l || "");
                 let puntos = 0;
 
+                // Si es "más", priorizar el mismo libro que se estaba leyendo
                 if (esArgumento && ultimoTema && (pagina.t === ultimoTema.t || pagina.l === ultimoTema.l)) {
                     puntos += 20;
                 }
@@ -169,37 +150,13 @@
         }
 
         setTimeout(() => {
-            // Protección: Solo cancelamos la voz si la API existe
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
-
+            window.speechSynthesis.cancel();
             const b1 = mejorRespuesta.substring(0, 1000);
             const b2 = mejorRespuesta.substring(1000, 3400);
 
-            // El mensaje de texto se crea SIEMPRE, sin importar si hay soporte de voz
             crearMensajeBot(b1);
-            
             const v1 = hablar(b1);
-            
-            // Si la voz funcionó, esperamos a que termine para el segundo bloque
-            if (v1) {
-                v1.onend = () => { 
-                    if (b2) { 
-                        setTimeout(() => { 
-                            crearMensajeBot(b2); 
-                            hablar(b2); 
-                        }, 500); 
-                    } 
-                };
-            } else {
-                // Si la voz NO funcionó, mostramos el segundo bloque de texto de inmediato
-                if (b2) {
-                    setTimeout(() => { 
-                        crearMensajeBot(b2); 
-                    }, 500);
-                }
-            }
+            v1.onend = () => { if (b2) { setTimeout(() => { crearMensajeBot(b2); hablar(b2); }, 500); } };
         }, 600);
     }
 </script>
