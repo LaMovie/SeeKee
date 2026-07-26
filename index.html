@@ -39,10 +39,15 @@
 <input type="text" id="Input" placeholder="Escribe tu consulta aquí..." onkeypress="checkEnter(event)">
 
 <script>
-    // Forzar carga de datos sin caché para evitar ver libros eliminados
-    document.write('<script src="datos.js?v=' + Date.now() + '"><\/script>');
+    var script = document.createElement('script');
+  
+    if (window.location.protocol.startsWith('http')) {
+        script.src = 'datos.js?v=' + Date.now();
+    } else {
+        script.src = 'datos.js';
+    }
+    document.head.appendChild(script);
 </script>
-
 <script>
     const lista = document.getElementById("Lista");
     const chatContainer = document.getElementById("All");
